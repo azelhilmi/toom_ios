@@ -1,0 +1,15 @@
+.loading-screen {
+  min-height: 60vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.loading-screen__message {
+  font-family: var(--font-body, "Roboto Condensed", sans-serif);
+  font-size: 0.85rem;
+  color: #999;
+  margin: 0;
+}

@@ -1,0 +1,148 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    // users/{uid} : chacun ne gère que son propre profil
+    match /users/{uid} {
+      allow read: if isSignedIn();
+      allow write: if isSignedIn() && request.auth.uid == uid;
+    }
+
+    // cameras/{cameraId} : le nombre de poses restantes n'est pas une
+    // donnée sensible, donc la lecture est ouverte à tout utilisateur
+    // connecté (nécessaire aussi pour la vérification d'existence faite
+    // par l'app avant de créer la pellicule du jour — un get() sur un
+    // document qui n'existe pas encore ne peut pas être filtré sur son
+    // ownerId puisque resource.data n'existe pas dans ce cas). Seules
+    // la création et la modification restent réservées au propriétaire —
+    // sauf pour l'organisateur d'un événement, qui peut ajuster le quota
+    // ou réinitialiser la pellicule de ses invités.
+    match /cameras/{cameraId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && request.resource.data.ownerId == request.auth.uid;
+      allow update: if isSignedIn() && (
+        (resource.data.ownerId == request.auth.uid && request.resource.data.shotsUsed <= resource.data.shotsAllowed) ||
+        (resource.data.eventId != null &&
+          get(/databases/$(database)/documents/events/$(resource.data.eventId)).data.organizerId == request.auth.uid)
+      );
+      allow delete: if isSignedIn() && (
+        resource.data.ownerId == request.auth.uid ||
+        (resource.data.eventId != null &&
+          get(/databases/$(database)/documents/events/$(resource.data.eventId)).data.organizerId == request.auth.uid)
+      );
+    }
+
+    // photos/{photoId} : métadonnées légères (pas l'image elle-même).
+    // NOTE IMPORTANTE — la métadonnée reste lisible par le propriétaire
+    // même avant la date de révélation ; c'est l'interface qui masque la
+    // photo. Ce choix évite toute Cloud Function (100% plan gratuit) et
+    // rend l'easter egg de la galerie cohérent : il "triche" réellement,
+    // il ne contourne pas une vraie protection serveur. Voir photoData
+    // ci-dessous pour le même choix appliqué à l'image elle-même.
+    // La suppression est réservée au propriétaire ou à l'organisateur de
+    // l'événement (réinitialisation de la pellicule d'un invité).
+    match /photos/{photoId} {
+      allow read: if isSignedIn() && (
+        resource.data.ownerId == request.auth.uid ||
+        // l'organisateur d'un événement peut lire les photos de ses invités
+        get(/databases/$(database)/documents/events/$(resource.data.eventId)).data.organizerId == request.auth.uid
+      );
+      allow create: if isSignedIn() && request.resource.data.ownerId == request.auth.uid;
+      allow delete: if isSignedIn() && (
+        resource.data.ownerId == request.auth.uid ||
+        (resource.data.eventId != null &&
+          get(/databases/$(database)/documents/events/$(resource.data.eventId)).data.organizerId == request.auth.uid)
+      );
+    }
+
+    // photoData/{photoId} : manifeste (nombre de morceaux), pas l'image
+    // elle-même. Mêmes règles d'accès que photos/{photoId} ci-dessus
+    // (propriétaire ou organisateur), sans vérification de date de
+    // révélation — cohérent avec le choix décrit plus haut.
+    match /photoData/{photoId} {
+      allow read: if isSignedIn() && (
+        resource.data.ownerId == request.auth.uid ||
+        (resource.data.eventId != null &&
+          get(/databases/$(database)/documents/events/$(resource.data.eventId)).data.organizerId == request.auth.uid)
+      );
+      allow create: if isSignedIn() && request.resource.data.ownerId == request.auth.uid;
+      allow delete: if isSignedIn() && (
+        resource.data.ownerId == request.auth.uid ||
+        (resource.data.eventId != null &&
+          get(/databases/$(database)/documents/events/$(resource.data.eventId)).data.organizerId == request.auth.uid)
+      );
+    }
+
+    // photoDataChunks/{photoId_i} : les morceaux de l'image elle-même
+    // (résolution d'impression 10×15, découpée pour rester sous 1 Mo par
+    // document). Mêmes règles que photoData ci-dessus. Jamais lus en
+    // liste, seulement à l'unité quand une photo doit s'afficher.
+    match /photoDataChunks/{chunkId} {
+      allow read: if isSignedIn() && (
+        resource.data.ownerId == request.auth.uid ||
+        (resource.data.eventId != null &&
+          get(/databases/$(database)/documents/events/$(resource.data.eventId)).data.organizerId == request.auth.uid)
+      );
+      allow create: if isSignedIn() && request.resource.data.ownerId == request.auth.uid;
+      allow delete: if isSignedIn() && (
+        resource.data.ownerId == request.auth.uid ||
+        (resource.data.eventId != null &&
+          get(/databases/$(database)/documents/events/$(resource.data.eventId)).data.organizerId == request.auth.uid)
+      );
+    }
+
+    // userCustomizations/{uid} et customThemes/{uid} : personnalisation
+    // du compte (fond d'écran, thème complet créé via le customisateur).
+    // Chacun ne gère que son propre document. Ces règles manquaient
+    // entièrement jusqu'ici — toute lecture/écriture était donc bloquée
+    // silencieusement par le refus par défaut de Firestore, ce qui
+    // cassait le customisateur pour tout le monde sans message d'erreur
+    // visible côté interface.
+    // userThemes/{uid} : plusieurs thèmes nommés par utilisateur (fond +
+    // couleur du mécanisme). Chacun ne gère que ses propres documents.
+    match /userThemes/{uid} {
+      allow read: if isSignedIn();
+      allow write: if isSignedIn() && request.auth.uid == uid;
+
+      match /themes/{themeId} {
+        allow read: if isSignedIn();
+        allow write: if isSignedIn() && request.auth.uid == uid;
+
+        match /chunks/{chunkId} {
+          allow read: if isSignedIn();
+          allow write: if isSignedIn() && request.auth.uid == uid;
+        }
+      }
+    }
+
+    // events/{eventId}
+    match /events/{eventId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && request.resource.data.organizerId == request.auth.uid;
+      allow update: if isSignedIn() && resource.data.organizerId == request.auth.uid;
+      allow delete: if isSignedIn() && resource.data.organizerId == request.auth.uid;
+
+      match /guests/{guestId} {
+        allow read: if isSignedIn();
+        allow write: if isSignedIn() && (
+          request.auth.uid == guestId ||
+          get(/databases/$(database)/documents/events/$(eventId)).data.organizerId == request.auth.uid
+        );
+      }
+
+      // Morceaux du thème imposé par l'organisateur (fond + couleur du
+      // mécanisme) — lisibles par tous les invités, modifiables
+      // seulement par l'organisateur.
+      match /themeChunks/{chunkId} {
+        allow read: if isSignedIn();
+        allow write: if isSignedIn() &&
+          get(/databases/$(database)/documents/events/$(eventId)).data.organizerId == request.auth.uid;
+      }
+    }
+  }
+}

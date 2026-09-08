@@ -1,0 +1,33 @@
+/*
+  Variables de thème globales de l'app (pages Réglages/Galerie/Événement).
+  L'apparence de l'appareil photo lui-même est gérée séparément, par
+  des images de boîtier (voir src/utils/hotspots.js) — ces variables ne
+  concernent que le reste de l'interface.
+*/
+
+:root {
+  /* Palette claire et moderne, assortie au logo (rouge + or) */
+  --chassis-color: #1a1a1a;
+  --chassis-color-dark: #0d0d0d;
+  --body-color: #f5c518;
+  --body-color-dark: #d9a800;
+  --body-shadow: #8a6a00;
+  --accent: #c8102e;
+  --accent-soft: #e2536a;
+  --viewfinder-bg: #101010;
+  --viewfinder-ring: #3a3a3a;
+  --dial-color: #2b2b2b;
+  --dial-text: #f5c518;
+  --flash-off: #444444;
+  --flash-on: #ff5a3c;
+  --paper: #fdfaf5;
+  --paper-alt: #ffffff;
+  --ink: #1c1a17;
+  --ink-soft: #746b5f;
+  --border-soft: rgba(28, 26, 23, 0.1);
+  --font-display: "Poppins", "Inter", "Segoe UI", sans-serif;
+  --font-body: "Inter", "Segoe UI", sans-serif;
+  /* Grain plastique discret sur le boîtier + léger bruit sur le papier */
+  --chassis-texture: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23000000' fill-opacity='0.12'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  --paper-texture: none;
+}

@@ -1,0 +1,117 @@
+.image-crop-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: rgba(0, 0, 0, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.image-crop-modal__panel {
+  background: #1a1a1a;
+  border-radius: 16px;
+  padding: 1.2rem;
+  width: 100%;
+  max-width: 380px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.image-crop-modal__title {
+  margin: 0;
+  font-family: var(--font-display, "Rockwell", serif);
+  font-weight: 800;
+  font-size: 1.05rem;
+  color: #fff;
+}
+
+.image-crop-modal__hint {
+  margin: 0;
+  font-family: var(--font-body, "Roboto Condensed", sans-serif);
+  font-size: 0.75rem;
+  color: #999;
+}
+
+.image-crop-modal__viewport {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
+  border-radius: 10px;
+  background: #000;
+  touch-action: none;
+  cursor: grab;
+}
+
+.image-crop-modal__viewport:active {
+  cursor: grabbing;
+}
+
+.image-crop-modal__image {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  max-width: none;
+  transform-origin: center;
+  user-select: none;
+  pointer-events: none;
+}
+
+.image-crop-modal__controls {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.image-crop-modal__icon-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid #444;
+  background: #262626;
+  color: #fff;
+  font-size: 1.3rem;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.image-crop-modal__zoom {
+  flex: 1;
+}
+
+.image-crop-modal__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.6rem;
+  margin-top: 0.2rem;
+}
+
+.image-crop-modal__cancel,
+.image-crop-modal__confirm {
+  padding: 0.6rem 1.1rem;
+  border-radius: 8px;
+  font-family: var(--font-body, "Roboto Condensed", sans-serif);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+}
+
+.image-crop-modal__cancel {
+  background: transparent;
+  color: #ccc;
+  border: 1px solid #444;
+}
+
+.image-crop-modal__confirm {
+  background: #c8102e;
+  color: #fff;
+}
+
+.image-crop-modal__confirm:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

@@ -1,0 +1,104 @@
+.onboarding {
+  position: absolute;
+  inset: 0;
+  z-index: 40;
+}
+
+.onboarding__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+}
+
+.onboarding__ring {
+  position: absolute;
+  width: 14vmin;
+  height: 14vmin;
+  max-width: 90%;
+  max-height: 90%;
+  border-radius: 50%;
+  border: 3px solid var(--flash-on, #ff5a3c);
+  box-shadow: 0 0 0 6px rgba(255, 90, 60, 0.25), 0 0 24px rgba(255, 90, 60, 0.6);
+  animation: onboarding-pulse 1.4s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes onboarding-pulse {
+  0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+  50% { transform: translate(-50%, -50%) scale(1.15); opacity: 0.7; }
+}
+
+.onboarding__bubble {
+  position: absolute;
+  left: 5%;
+  right: 5%;
+  bottom: max(1.4rem, env(safe-area-inset-bottom));
+  background: #1c1a17;
+  border: 2px solid var(--flash-on, #ff5a3c);
+  border-radius: 16px;
+  padding: 1rem 1.1rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.onboarding__step-count {
+  margin: 0 0 0.3rem;
+  font-family: var(--font-body, "Inter", sans-serif);
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #999;
+  font-weight: 700;
+}
+
+.onboarding__title {
+  margin: 0 0 0.3rem;
+  font-family: var(--font-display, "Poppins", sans-serif);
+  font-weight: 700;
+  font-size: 1rem;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.onboarding__arrow {
+  color: var(--flash-on, #ff5a3c);
+  font-size: 1.1rem;
+}
+
+.onboarding__text {
+  margin: 0 0 0.9rem;
+  font-family: var(--font-body, "Inter", sans-serif);
+  font-size: 0.82rem;
+  line-height: 1.4;
+  color: #ddd;
+}
+
+.onboarding__actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.onboarding__skip {
+  background: none;
+  border: none;
+  color: #999;
+  font-family: var(--font-body, "Inter", sans-serif);
+  font-size: 0.8rem;
+  cursor: pointer;
+  padding: 0.5rem 0.3rem;
+}
+
+.onboarding__next {
+  padding: 0.6rem 1.2rem;
+  border-radius: 999px;
+  border: none;
+  background: var(--flash-on, #ff5a3c);
+  color: #1c1a17;
+  font-family: var(--font-display, "Poppins", sans-serif);
+  font-weight: 700;
+  font-size: 0.85rem;
+  cursor: pointer;
+}

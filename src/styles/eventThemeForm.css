@@ -1,0 +1,70 @@
+/*
+  Styles partagés entre EventCreatePage et EventDashboardPage pour le
+  bloc "habillage imposé aux invités" (upload + recadrage + couleur du
+  mécanisme) — factorisés ici plutôt que dupliqués/importés en croix
+  entre les deux pages.
+*/
+
+.event-form__checkbox-label {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center;
+  gap: 0.5rem;
+  text-transform: none !important;
+  letter-spacing: normal !important;
+  font-size: 0.85rem !important;
+  font-weight: 500 !important;
+  color: var(--ink, #1c1a17) !important;
+}
+
+.event-form__theme-block {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  padding: 0.9rem;
+  border-radius: 12px;
+  background: #faf7f2;
+  border: 1px solid var(--border-soft, rgba(0, 0, 0, 0.08));
+}
+
+.event-form__theme-hint {
+  font-size: 0.78rem !important;
+  color: var(--ink-soft, #746b5f);
+  margin: 0;
+  text-transform: none;
+  font-weight: 400 !important;
+}
+
+.event-form__upload-button {
+  align-self: flex-start;
+  padding: 0.55rem 0.9rem;
+  border-radius: 8px;
+  background: var(--body-color, #f5c518);
+  color: #1a1a1a;
+  font-weight: 700;
+  font-size: 0.82rem;
+  cursor: pointer;
+}
+
+.event-form__theme-preview {
+  width: 140px;
+  aspect-ratio: 9 / 16;
+  background-size: cover;
+  background-position: center;
+  border-radius: 8px;
+  border: 1px solid var(--border-soft, rgba(0, 0, 0, 0.1));
+}
+
+.event-form__color-row {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.event-form__color-row input[type="color"] {
+  width: 42px;
+  height: 38px;
+  padding: 2px;
+  border-radius: 8px;
+  cursor: pointer;
+}

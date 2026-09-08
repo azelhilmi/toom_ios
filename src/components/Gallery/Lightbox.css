@@ -1,0 +1,149 @@
+.lightbox {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 10, 10, 0.96);
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  animation: lightbox-fade-in 0.2s ease;
+}
+
+@keyframes lightbox-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.lightbox__close {
+  position: absolute;
+  top: max(1rem, env(safe-area-inset-top));
+  right: 1rem;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.lightbox__counter {
+  position: absolute;
+  top: max(1rem, env(safe-area-inset-top));
+  left: 50%;
+  transform: translateX(-50%);
+  margin: 0;
+  color: #ccc;
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.lightbox__stage {
+  position: relative;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  touch-action: pan-y;
+}
+
+.lightbox__img {
+  max-width: 100%;
+  max-height: 72vh;
+  object-fit: contain;
+  border-radius: 4px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+  transition: transform 0.15s ease;
+  user-select: none;
+  animation: lightbox-img-in 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes lightbox-img-in {
+  from { opacity: 0; transform: scale(0.94); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.lightbox__loading {
+  color: #999;
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  padding: 4rem 0;
+}
+
+.lightbox__nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(0, 0, 0, 0.4);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.lightbox__nav--prev {
+  left: 0.5rem;
+}
+
+.lightbox__nav--next {
+  right: 0.5rem;
+}
+
+.lightbox__actions {
+  display: flex;
+  gap: 0.8rem;
+  margin-top: 1.4rem;
+}
+
+.lightbox__button {
+  padding: 0.7rem 1.4rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: transparent;
+  color: #fff;
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.lightbox__button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.lightbox__button--primary {
+  background: var(--body-color, #f5c518);
+  color: #1a1a1a;
+  border-color: transparent;
+  font-weight: 600;
+}
+
+.lightbox__button--danger {
+  border-color: #c8102e;
+  color: #ff5c6c;
+}
+
+.lightbox__button--danger:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.lightbox__status {
+  margin-top: 0.8rem;
+  color: #ccc;
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+}

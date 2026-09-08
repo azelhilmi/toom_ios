@@ -1,0 +1,46 @@
+.app-splash {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: #f5c518;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.1rem;
+  transition: opacity 0.45s ease;
+}
+
+.app-splash--hide {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.app-splash__logo {
+  width: min(40vw, 170px);
+  height: min(40vw, 170px);
+  animation: app-splash-bounce 1.8s cubic-bezier(0.34, 1.56, 0.64, 1) infinite;
+  filter: drop-shadow(0 10px 25px rgba(0, 0, 0, 0.18));
+}
+
+.app-splash__tagline {
+  margin: 0;
+  font-family: "Poppins", "Inter", sans-serif;
+  font-style: italic;
+  font-weight: 600;
+  color: #7a1414;
+  font-size: 1rem;
+  letter-spacing: 0.01em;
+  animation: app-splash-fade 1.8s ease-in-out infinite;
+}
+
+@keyframes app-splash-bounce {
+  0%, 100% { transform: scale(1) rotate(0deg); }
+  30% { transform: scale(1.08) rotate(-3deg); }
+  60% { transform: scale(0.97) rotate(2deg); }
+}
+
+@keyframes app-splash-fade {
+  0%, 100% { opacity: 0.75; }
+  50% { opacity: 1; }
+}

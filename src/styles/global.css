@@ -1,0 +1,108 @@
+@import "./themes.css";
+
+* {
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  overscroll-behavior: none;
+}
+
+body {
+  background: var(--paper, #fdfaf5);
+  font-family: var(--font-body);
+  color: var(--ink, #1c1a17);
+  background-image: var(--paper-texture, none);
+  min-height: 100%;
+}
+
+.app-shell {
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--paper, #fdfaf5);
+  /* Zone sûre en haut (barre batterie/réseau) une fois l'app installée
+     en plein écran standalone — nulle dans un navigateur classique. */
+  padding-top: env(safe-area-inset-top);
+}
+
+.app-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.page-loading {
+  text-align: center;
+  color: var(--ink-soft, #746b5f);
+  font-family: var(--font-body);
+  padding: 3rem 1rem;
+}
+
+button {
+  font-family: inherit;
+}
+
+input, select, textarea {
+  font-family: inherit;
+  background: var(--paper-alt, #fff);
+  color: var(--ink, #1c1a17);
+  border-color: var(--border-soft, #ddd);
+}
+
+input::placeholder {
+  color: var(--ink-soft, #999);
+}
+
+.page-header-logo {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+  display: block;
+  margin-bottom: 0.3rem;
+}
+
+/* Animation d'entrée partagée par les pages de menu (Galerie,
+   Événements, Thèmes, Réglages) — un léger fondu-glissé au montage,
+   plus vivant qu'un affichage instantané. */
+@keyframes page-fade-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.page-enter {
+  animation: page-fade-in 0.35s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+}
+
+/* Retour au toucher générique pour les éléments interactifs qui n'ont
+   pas déjà leur propre transform:active — cohérence dans toute l'app. */
+button, a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Filigrane "Toom" en mosaïque, discret, pour habiller le fond des
+   pages de menu (Galerie, Événements, Thèmes, Réglages...). Un simple
+   ::before pleine page en position fixe, sous le contenu. */
+.watermark-bg {
+  position: relative;
+  isolation: isolate;
+}
+
+.watermark-bg::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background-image: url("/brand/wordmark-tile.webp");
+  background-repeat: repeat;
+  background-size: 130px auto;
+  opacity: 0.05;
+  transform: rotate(-12deg) scale(1.4);
+  transform-origin: center;
+  pointer-events: none;
+}

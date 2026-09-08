@@ -1,0 +1,19 @@
+.gallery-shortcut {
+  position: absolute;
+  left: 0.9rem;
+  bottom: max(0.9rem, env(safe-area-inset-bottom));
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255, 255, 255, 0.18);
+  background: linear-gradient(180deg, rgba(30, 30, 30, 0.75) 0%, rgba(10, 10, 10, 0.75) 100%);
+  backdrop-filter: blur(6px);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+  color: var(--body-color, #f5c518);
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+}

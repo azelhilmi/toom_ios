@@ -1,0 +1,90 @@
+.status-banner {
+  position: absolute;
+  left: 4.5rem;
+  right: 4%;
+  bottom: max(1.2rem, env(safe-area-inset-bottom));
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: rgba(10, 10, 10, 0.78);
+  backdrop-filter: blur(6px);
+  border-radius: 12px;
+  padding: 0.55rem 0.9rem;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3);
+  animation: status-banner-in 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes status-banner-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (orientation: landscape) {
+  .status-banner {
+    left: auto;
+    right: 3%;
+    width: 33%;
+    bottom: 8%;
+  }
+}
+
+.status-banner__icon {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.status-banner__text {
+  margin: 0;
+  font-family: var(--font-display, "Rockwell", serif);
+  font-weight: 800;
+  font-size: clamp(0.8rem, 3.3vmin, 1.05rem);
+  color: #fff;
+  line-height: 1.25;
+}
+
+/* --- Variantes par type --- */
+
+.status-banner--ready {
+  border: 2px solid var(--body-color, #f5c518);
+}
+.status-banner--ready .status-banner__icon {
+  background: rgba(245, 197, 24, 0.18);
+  color: var(--body-color, #f5c518);
+}
+
+.status-banner--success {
+  border: 2px solid #3aa655;
+  animation: status-banner-in 0.3s cubic-bezier(0.22, 1, 0.36, 1), status-banner-pop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.status-banner--success .status-banner__icon {
+  background: rgba(58, 166, 85, 0.2);
+  color: #4ade80;
+}
+
+@keyframes status-banner-pop {
+  0% { transform: scale(0.9); }
+  60% { transform: scale(1.03); }
+  100% { transform: scale(1); }
+}
+
+.status-banner--error {
+  border: 2px solid #c8102e;
+}
+.status-banner--error .status-banner__icon {
+  background: rgba(200, 16, 46, 0.18);
+  color: #ff5c6c;
+}
+
+.status-banner--film {
+  border: 2px solid #ff5a3c;
+}
+.status-banner--film .status-banner__icon {
+  background: rgba(255, 90, 60, 0.18);
+  color: #ff9a7a;
+}

@@ -1,0 +1,56 @@
+.film-wheel-hotspot {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+  cursor: grab;
+  border-radius: 6px;
+  overflow: hidden;
+  background: radial-gradient(
+    ellipse,
+    color-mix(in srgb, var(--flash-on, #ff5a3c) calc(var(--wheel-progress, 0) * 40%), transparent) 0%,
+    transparent 75%
+  );
+}
+
+.film-wheel-hotspot:active {
+  cursor: grabbing;
+}
+
+/* Bandes de crantage qui défilent avec le glissé — l'impression de
+   rotation vient du défilement continu (--wheel-roll), pas d'une vraie
+   rotation d'image (la molette réelle est peinte dans le boîtier). */
+.film-wheel-hotspot__ridges {
+  opacity: 0;
+  transition: opacity 0.15s ease;
+  border-radius: 4px;
+  background-image: repeating-linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.55) 0,
+    rgba(255, 255, 255, 0.55) 0.5vmin,
+    rgba(0, 0, 0, 0.35) 0.5vmin,
+    rgba(0, 0, 0, 0.35) 1vmin,
+    transparent 1vmin,
+    transparent 2vmin
+  );
+  background-position: var(--wheel-roll, 0) 0;
+  mix-blend-mode: overlay;
+  pointer-events: none;
+}
+
+.film-wheel-hotspot--vertical .film-wheel-hotspot__ridges {
+  background-image: repeating-linear-gradient(
+    0deg,
+    rgba(255, 255, 255, 0.55) 0,
+    rgba(255, 255, 255, 0.55) 0.5vmin,
+    rgba(0, 0, 0, 0.35) 0.5vmin,
+    rgba(0, 0, 0, 0.35) 1vmin,
+    transparent 1vmin,
+    transparent 2vmin
+  );
+  background-position: 0 var(--wheel-roll, 0);
+}
+
+.film-wheel-hotspot:active .film-wheel-hotspot__ridges {
+  opacity: 1;
+}

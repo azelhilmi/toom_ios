@@ -1,0 +1,38 @@
+.gallery {
+  padding: 1rem;
+  background: var(--paper, #101010);
+  background-image: var(--paper-texture, none);
+  min-height: calc(100% - 2rem);
+}
+
+.gallery--empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40vh;
+  text-align: center;
+  color: var(--ink-soft, #999);
+  font-family: var(--font-body);
+  padding: 2rem;
+}
+
+.gallery__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 8px;
+  user-select: none;
+  padding: 0.5rem;
+}
+
+.gallery__cheat-banner {
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  color: var(--ink, #eee);
+  background: color-mix(in srgb, var(--body-color, #f5c518) 20%, transparent);
+  background-image: var(--paper-texture, none);
+  border: 1px solid var(--body-color, #f5c518);
+  border-radius: 6px;
+  padding: 0.6rem 0.8rem;
+  margin-bottom: 0.8rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}

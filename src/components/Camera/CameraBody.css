@@ -1,0 +1,88 @@
+.camera-body {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 100%;
+  overflow: hidden;
+  background: #000;
+}
+
+.camera-body__skin {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  /* Étirement exact quelle que soit la taille de l'écran — pas de
+     recadrage (cover) ni de bandes noires (contain), comme demandé. */
+  object-fit: fill;
+  z-index: 2;
+  pointer-events: none;
+  user-select: none;
+}
+
+.camera-body__skin-relief {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  z-index: 3;
+  pointer-events: none;
+  user-select: none;
+}
+
+.camera-body__skin-relief-tint {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 3;
+  pointer-events: none;
+  mix-blend-mode: color;
+}
+
+
+
+.camera-body__viewfinder-slot,
+.camera-body__pose-slot {
+  z-index: 1;
+  overflow: hidden;
+}
+
+.camera-body__hotspot {
+  z-index: 3;
+}
+
+.camera-body__instructions {
+  pointer-events: none;
+}
+
+.camera-body__hotspot,
+.camera-body__viewfinder-slot,
+.camera-body__pose-slot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.camera-body__shutter-hotspot {
+  width: 16vmin;
+  height: 16vmin;
+  max-width: 100%;
+  max-height: 100%;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.camera-body__shutter-hotspot:not(:disabled):active {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.camera-body__shutter-hotspot:disabled {
+  cursor: not-allowed;
+}
+
+

@@ -1,0 +1,147 @@
+.settings-page {
+  min-height: 100%;
+  background: var(--paper, #101010);
+  color: var(--ink, #eee);
+}
+
+.settings-page__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 1.5rem 1rem 1rem;
+  border-bottom: 1px solid var(--ink-soft, #2a2a2a);
+}
+
+.settings-page__header h1 {
+  font-family: var(--font-display);
+  color: var(--body-color, #f5c518);
+  font-size: 1.4rem;
+  margin: 0;
+}
+
+.settings-page__header p {
+  font-family: var(--font-body);
+  color: var(--ink-soft, #999);
+  font-size: 0.8rem;
+  margin: 0.2rem 0 0;
+}
+
+.settings-page__back {
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--chassis-color-dark, #000);
+  background: var(--body-color, #f5c518);
+  border-radius: 999px;
+  padding: 0.5rem 1rem;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.settings-page__section {
+  padding: 1.2rem 1rem;
+}
+
+.settings-page__section h2 {
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  color: var(--ink-soft, #aaa);
+  margin: 0 0 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+
+
+
+
+/* Upload personnalisé */
+.settings-page__hint {
+  font-family: var(--font-body);
+  color: var(--ink-soft, #777);
+  font-size: 0.75rem;
+  margin: 0 0 1rem;
+}
+
+.settings-page__customize-button {
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--ink, #fff);
+  background: var(--flash-on, #ff4444);
+  border-radius: 8px;
+  padding: 0.7rem 1.2rem;
+  cursor: pointer;
+  border: none;
+  width: 100%;
+  margin-top: 0.5rem;
+  transition: opacity 0.2s;
+}
+
+.settings-page__customize-button:hover {
+  opacity: 0.9;
+}
+
+.settings-page__upload {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.settings-page__file-input {
+  display: none;
+}
+
+.settings-page__upload-button {
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--chassis-color-dark, #1a1a1a);
+  background: var(--body-color, #f5c518);
+  border-radius: 8px;
+  padding: 0.6rem 1rem;
+  cursor: pointer;
+  border: none;
+  transition: opacity 0.2s;
+}
+
+.settings-page__upload-button:hover:not(:disabled) {
+  opacity: 0.9;
+}
+
+.settings-page__upload-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.settings-page__remove-button {
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--ink, #fff);
+  background: #c0392b;
+  border-radius: 8px;
+  padding: 0.6rem 1rem;
+  cursor: pointer;
+  border: none;
+  transition: opacity 0.2s;
+}
+
+.settings-page__remove-button:hover:not(:disabled) {
+  opacity: 0.9;
+}
+
+.settings-page__remove-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.settings-page__error {
+  font-family: var(--font-body);
+  color: #ff4444;
+  font-size: 0.75rem;
+  margin: 0.5rem 0 0;
+}
+
+
+

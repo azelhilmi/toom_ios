@@ -1,0 +1,48 @@
+name: Build iOS (vérification de compilation)
+
+# Ce job ne produit PAS d'IPA installable : signer une app iOS nécessite un
+# compte Apple Developer (payant) + certificats + profils de provisioning,
+# pas encore en place pour ce projet. Il sert à vérifier que le projet Xcode
+# généré par Capacitor compile toujours après chaque changement du code web.
+# Voir MOBILE_BUILD_INSTRUCTIONS.md pour étendre ce workflow une fois les
+# certificats Apple disponibles (signature + export .ipa + upload TestFlight).
+on:
+  workflow_dispatch: {}
+  push:
+    branches: [main]
+    paths:
+      - "src/**"
+      - "public/**"
+      - "ios/**"
+      - "capacitor.config.ts"
+      - "package.json"
+      - "package-lock.json"
+      - ".github/workflows/mobile-build.yml"
+
+jobs:
+  ios-sanity-check:
+    name: iOS (compilation non signée)
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: "npm"
+
+      - name: Installer les dépendances web
+        run: npm ci
+
+      - name: Build web (Vite)
+        run: npm run build
+
+      - name: Synchroniser Capacitor (iOS)
+        run: npx cap sync ios
+
+      - name: Compiler le projet iOS (sans signer)
+        working-directory: ios/App
+        run: |
+          xcodebuild -workspace App.xcworkspace -scheme App \
+            -sdk iphonesimulator -configuration Debug \
+            CODE_SIGNING_ALLOWED=NO build
