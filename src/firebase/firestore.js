@@ -5,20 +5,22 @@ import {
 } from "firebase/firestore";
 import { db } from "./init";
 import { captureFrameAsBase64 } from "../utils/imageCompression";
-import { canReuseRoll } from "../utils/rollLogic";
+import { canReuseRoll, computeRevealAtMs } from "../utils/rollLogic";
+import { scheduleRevealNotification } from "../utils/localNotifications";
+import {
+  isLocalId, getOrCreateLocalRoll, listenToLocalRoll, takeLocalPhoto,
+  listenToLocalPhotos, getLocalPhotoBase64, deleteLocalPhoto,
+} from "../utils/localPhotoStorage";
 
-const DAILY_SHOTS = 24;
 /**
  * Date de révélation : le lendemain du jour de la première photo, à
  * 10h00 heure locale (celle de l'appareil qui prend la photo) — plus
  * prévisible qu'un délai glissant de 24h qui tombait à une heure
- * différente selon le moment de la prise de vue.
+ * différente selon le moment de la prise de vue. Calcul partagé avec le
+ * backend de stockage local, voir rollLogic.js.
  */
 function computeRevealAt(firstPhotoDate) {
-  const d = new Date(firstPhotoDate);
-  d.setDate(d.getDate() + 1);
-  d.setHours(10, 0, 0, 0);
-  return Timestamp.fromDate(d);
+  return Timestamp.fromMillis(computeRevealAtMs(firstPhotoDate));
 }
 
 /**
@@ -30,6 +32,13 @@ function computeRevealAt(firstPhotoDate) {
  * "24h après la 1ère photo, tout se révèle d'un coup" + "il faut
  * attendre le développement pour recharger une pellicule" — sans Cloud
  * Function, juste en choisissant quel document réutiliser ou créer.
+ *
+ * Les pellicules perso (hors événement) sont désormais stockées en local
+ * (IndexedDB, voir localPhotoStorage.js) plutôt que dans Firestore — sauf
+ * compatibilité ascendante : si une pellicule Firestore créée avant ce
+ * changement est encore active (pas développée), on continue de
+ * l'utiliser jusqu'à son développement ; toutes les pellicules SUIVANTES
+ * partent en local.
  */
 export async function getOrCreateActiveRoll(uid, theme = "kodak-funsaver") {
   const q = query(
@@ -44,30 +53,16 @@ export async function getOrCreateActiveRoll(uid, theme = "kodak-funsaver") {
   if (!snap.empty) {
     const existing = snap.docs[0];
     const data = existing.data();
-    // Tant que la pellicule n'a pas atteint sa date de révélation, on
-    // continue de l'utiliser (pleine ou non). Une fois développée, on
-    // repart sur une neuve dans tous les cas — voir canReuseRoll pour
-    // le pourquoi (et ses tests dans rollLogic.test.js).
     if (canReuseRoll(data, Date.now())) {
       return existing.id;
     }
   }
 
-  const cameraId = `${uid}_roll_${Date.now()}`;
-  await setDoc(doc(db, "cameras", cameraId), {
-    ownerId: uid,
-    type: "daily",
-    shotsAllowed: DAILY_SHOTS,
-    shotsUsed: 0,
-    theme,
-    firstPhotoAt: null,
-    revealAt: null,
-    createdAt: serverTimestamp(),
-  });
-  return cameraId;
+  return getOrCreateLocalRoll(uid, theme);
 }
 
 export function listenToRoll(cameraId, callback) {
+  if (isLocalId(cameraId)) return listenToLocalRoll(cameraId, callback);
   return onSnapshot(doc(db, "cameras", cameraId), (snap) => {
     if (snap.exists()) callback({ id: snap.id, ...snap.data() });
   });
@@ -97,6 +92,15 @@ const CHUNK_SIZE = 650_000;
  * d'un coup, comme demandé, pas photo par photo.
  */
 export async function takePhoto({ cameraId, ownerId, videoEl, flashUsed, guestName = null, eventId = null, eventName = null, revealAtOverride = null }) {
+  // Pellicule perso stockée en local (voir getOrCreateActiveRoll /
+  // localPhotoStorage.js) — chemin entièrement séparé de Firestore, la
+  // notification de révélation est programmée à l'intérieur de
+  // takeLocalPhoto.
+  if (isLocalId(cameraId)) {
+    const { photoId } = await takeLocalPhoto({ cameraId, ownerId, videoEl, flashUsed });
+    return photoId;
+  }
+
   const base64 = await captureFrameAsBase64(videoEl, { eventName });
 
   const cameraRef = doc(db, "cameras", cameraId);
@@ -113,6 +117,14 @@ export async function takePhoto({ cameraId, ownerId, videoEl, flashUsed, guestNa
       cameraUpdates.firstPhotoAt = firstPhotoAt;
       cameraUpdates.revealAt = revealAt;
     }
+  }
+
+  // App native uniquement (no-op sur le web PWA, voir localNotifications.js) :
+  // programme la notification système dès que la date de révélation de
+  // cette pellicule est connue, qu'elle vienne d'être fixée (1ère photo)
+  // ou qu'elle existait déjà (photos suivantes du même rouleau/événement).
+  if (revealAt) {
+    scheduleRevealNotification(revealAt.toMillis());
   }
 
   const photoId = `${cameraId}_${Date.now()}`;
@@ -144,24 +156,64 @@ export async function takePhoto({ cameraId, ownerId, videoEl, flashUsed, guestNa
   return photoId;
 }
 
+/**
+ * Fusionne les photos Firestore (événements + anciennes photos perso
+ * antérieures au passage au stockage local, conservées lisibles pour ne
+ * rien casser rétroactivement) et les photos perso stockées en local
+ * (IndexedDB), triées ensemble comme si elles venaient d'une seule
+ * source — GalleryPage.jsx n'a besoin de rien savoir de cette séparation.
+ */
 export function listenToPhotos(ownerId, callback) {
   const q = query(
     collection(db, "photos"),
     where("ownerId", "==", ownerId),
     orderBy("takenAt", "desc")
   );
-  return onSnapshot(q, (snap) => {
-    callback(snap.docs.map((d) => ({ id: d.id, ...d.data() })));
+
+  let firestorePhotos = [];
+  let localPhotos = [];
+  let firestoreReady = false;
+  let localReady = false;
+
+  function emit() {
+    if (!firestoreReady || !localReady) return;
+    const merged = [...firestorePhotos, ...localPhotos].sort((a, b) => {
+      const aMs = a.takenAt?.toMillis ? a.takenAt.toMillis() : 0;
+      const bMs = b.takenAt?.toMillis ? b.takenAt.toMillis() : 0;
+      return bMs - aMs;
+    });
+    callback(merged);
+  }
+
+  const unsubFirestore = onSnapshot(q, (snap) => {
+    firestorePhotos = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+    firestoreReady = true;
+    emit();
   });
+  const unsubLocal = listenToLocalPhotos(ownerId, (photos) => {
+    localPhotos = photos;
+    localReady = true;
+    emit();
+  });
+
+  return () => {
+    unsubFirestore();
+    unsubLocal();
+  };
 }
 
 /**
- * Récupère l'image (base64) d'une photo précise en réassemblant ses
- * morceaux. Appelé uniquement au moment où une photo doit réellement
- * s'afficher (révélée, easter egg, ou visionneuse plein écran), jamais
- * lors du simple listing de la galerie.
+ * Récupère l'image (base64) d'une photo précise. Pour une photo perso
+ * stockée en local, lecture directe (pas de découpage, voir
+ * localPhotoStorage.js) ; pour une photo Firestore (événement, ou photo
+ * perso antérieure au stockage local), réassemblage de ses morceaux.
+ * Appelé uniquement au moment où une photo doit réellement s'afficher
+ * (révélée, easter egg, ou visionneuse plein écran), jamais lors du
+ * simple listing de la galerie.
  */
 export async function getPhotoBase64(photoId) {
+  if (isLocalId(photoId)) return getLocalPhotoBase64(photoId);
+
   const manifestSnap = await getDoc(doc(db, "photoData", photoId));
   if (!manifestSnap.exists()) return null;
   const { chunkCount } = manifestSnap.data();
@@ -175,9 +227,11 @@ export async function getPhotoBase64(photoId) {
 /**
  * Supprime entièrement une photo : sa métadonnée, son manifeste et tous
  * ses morceaux d'image. Utilisé par la réinitialisation de pellicule
- * d'un invité (voir resetGuestRoll).
+ * d'un invité (voir resetGuestRoll) et la suppression depuis la galerie.
  */
 export async function deletePhoto(photoId) {
+  if (isLocalId(photoId)) return deleteLocalPhoto(photoId);
+
   const manifestSnap = await getDoc(doc(db, "photoData", photoId));
   const chunkCount = manifestSnap.exists() ? manifestSnap.data().chunkCount : 0;
 

@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { canReuseRoll } from "./rollLogic";
+import { canReuseRoll, computeRevealAtMs } from "./rollLogic";
 
 function timestamp(ms) {
   return { toMillis: () => ms };
@@ -33,5 +33,26 @@ describe("canReuseRoll", () => {
   it("ne réutilise jamais une pellicule inexistante", () => {
     expect(canReuseRoll(null, Date.now())).toBe(false);
     expect(canReuseRoll(undefined, Date.now())).toBe(false);
+  });
+});
+
+describe("computeRevealAtMs", () => {
+  it("révèle le lendemain à 10h00 heure locale, quelle que soit l'heure de la première photo", () => {
+    const firstPhoto = new Date(2026, 5, 14, 23, 45, 0); // 14 juin 2026, 23h45
+    const revealAt = new Date(computeRevealAtMs(firstPhoto));
+    expect(revealAt.getFullYear()).toBe(2026);
+    expect(revealAt.getMonth()).toBe(5);
+    expect(revealAt.getDate()).toBe(15);
+    expect(revealAt.getHours()).toBe(10);
+    expect(revealAt.getMinutes()).toBe(0);
+  });
+
+  it("passe au mois/à l'année suivante si la première photo est en fin de mois/d'année", () => {
+    const firstPhoto = new Date(2026, 11, 31, 8, 0, 0); // 31 décembre 2026
+    const revealAt = new Date(computeRevealAtMs(firstPhoto));
+    expect(revealAt.getFullYear()).toBe(2027);
+    expect(revealAt.getMonth()).toBe(0);
+    expect(revealAt.getDate()).toBe(1);
+    expect(revealAt.getHours()).toBe(10);
   });
 });

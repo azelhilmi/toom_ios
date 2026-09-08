@@ -19,3 +19,21 @@ export function canReuseRoll(rollData, nowMs) {
   const isDeveloped = rollData.revealAt ? rollData.revealAt.toMillis() <= nowMs : false;
   return !isDeveloped;
 }
+
+/**
+ * Calcule la date de révélation (en millisecondes epoch) : le lendemain
+ * du jour de la première photo, à 10h00 heure locale de l'appareil qui a
+ * pris la photo. Logique pure et partagée par les deux backends de
+ * stockage (pellicules Firestore — événements — et pellicules locales
+ * IndexedDB — usage perso hors événement, voir localPhotoStorage.js) :
+ * une seule règle de calcul, jamais dupliquée.
+ *
+ * @param {Date|number} firstPhotoDate
+ * @returns {number} timestamp epoch en millisecondes
+ */
+export function computeRevealAtMs(firstPhotoDate) {
+  const d = new Date(firstPhotoDate);
+  d.setDate(d.getDate() + 1);
+  d.setHours(10, 0, 0, 0);
+  return d.getTime();
+}
