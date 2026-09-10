@@ -42,7 +42,17 @@ jobs:
 
       - name: Compiler le projet iOS (sans signer)
         working-directory: ios/App
+        shell: bash
         run: |
+          set +e
           xcodebuild -workspace App.xcworkspace -scheme App \
             -sdk iphonesimulator -configuration Debug \
-            CODE_SIGNING_ALLOWED=NO build
+            CODE_SIGNING_ALLOWED=NO build > xcodebuild.log 2>&1
+          code=$?
+          tail -n 200 xcodebuild.log
+          if [ $code -ne 0 ]; then
+            tail -n 60 xcodebuild.log > xcodebuild-tail.log
+            msg=$(python3 -c "print(open('xcodebuild-tail.log').read().replace('%','%25').replace(chr(13),'%0D').replace(chr(10),'%0A'))")
+            echo "::error::xcodebuild a echoue (code $code) -- dernieres lignes : $msg"
+            exit $code
+          fi
