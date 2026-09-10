@@ -44,3 +44,42 @@
   0%, 100% { opacity: 0.75; }
   50% { opacity: 1; }
 }
+
+.app-splash--error {
+  background: #7a1414;
+  padding: 0 1.5rem;
+  text-align: center;
+}
+
+.app-splash--error .app-splash__logo {
+  animation: none;
+  opacity: 0.85;
+}
+
+.app-splash--error .app-splash__tagline {
+  animation: none;
+  color: #fff;
+  font-style: normal;
+  font-size: 1.15rem;
+}
+
+.app-splash__error-detail {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.85);
+  font-family: "Inter", sans-serif;
+  font-size: 0.9rem;
+  max-width: 280px;
+}
+
+.app-splash__retry {
+  margin-top: 0.4rem;
+  padding: 0.7rem 1.6rem;
+  border-radius: 999px;
+  border: none;
+  background: #f5c518;
+  color: #7a1414;
+  font-family: "Inter", sans-serif;
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+}
