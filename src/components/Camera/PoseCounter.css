@@ -5,6 +5,13 @@
   width: 100%;
   height: 100%;
   overflow: hidden;
+  border-radius: 18%;
+  /* Fenêtre claire façon compteur de vues mécanique — avant ce correctif,
+     ce conteneur n'avait pas de fond et laissait voir le fond noir du
+     boîtier à travers la découpe transparente du boîtier, rendant le
+     chiffre (gris foncé) quasi invisible. */
+  background: #f6ecd3;
+  box-shadow: inset 0 0 0.2em rgba(0, 0, 0, 0.3);
   filter: url(#pose-counter-fisheye);
 }
 

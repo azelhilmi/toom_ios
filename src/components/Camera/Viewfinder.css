@@ -3,6 +3,11 @@
   height: 100%;
   background: #101010;
   overflow: hidden;
+  /* Coins arrondis : la fenetre agrandie deborde un peu du cadre noir
+     dessine sur le boitier (voulu, pour un viseur plus grand et
+     utilisable) — l'arrondi rend la transition plus naturelle plutot
+     qu'un rectangle dur pose sur la forme ovale du dessin. */
+  border-radius: 22%;
 }
 
 .viewfinder-fill__video {

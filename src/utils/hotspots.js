@@ -13,7 +13,7 @@ export const HOTSPOTS = {
   landscape: {
     wheelAxis: "horizontal", // glissé gauche→droite
     mask: "/skins/mask-horizontal.webp",
-    viewfinder: { x: 47.7, y: 10.9, w: 4.6, h: 7.4 },
+    viewfinder: { x: 47.7, y: 10.9, w: 8.3, h: 11.8 },
     poseCounter: { x: 75.4, y: 65.3, w: 5.7, h: 7.5 },
     flashButton: { x: 71, y: 12.3, w: 9.3, h: 9.3 },
     shutter: { x: 49.7, y: 75.8, w: 20, h: 20 },
@@ -24,7 +24,7 @@ export const HOTSPOTS = {
   portrait: {
     wheelAxis: "vertical", // glissé haut→bas
     mask: "/skins/mask-vertical.webp",
-    viewfinder: { x: 49.9, y: 7.6, w: 9.7, h: 4.1 },
+    viewfinder: { x: 49.9, y: 7.6, w: 17.5, h: 6.6 },
     poseCounter: { x: 85.3, y: 82.6, w: 9.7, h: 3.9 },
     flashButton: { x: 84.6, y: 26.2, w: 14, h: 14 },
     shutter: { x: 48.9, y: 73.3, w: 20, h: 20 },
