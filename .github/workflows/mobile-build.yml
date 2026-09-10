@@ -45,7 +45,7 @@ jobs:
         shell: bash
         run: |
           set +e
-          xcodebuild -workspace App.xcworkspace -scheme App \
+          xcodebuild -project App.xcodeproj -scheme App \
             -sdk iphonesimulator -configuration Debug \
             CODE_SIGNING_ALLOWED=NO build > xcodebuild.log 2>&1
           code=$?
