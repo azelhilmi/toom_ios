@@ -4,11 +4,22 @@
  * Communes à TOUS les thèmes (par défaut, préréglés ou personnalisés) :
  * ils partagent le même moule de boîtier, seul l'habillage change.
  *
- * Le viseur et le compte-poses sont désormais rendus AU-DESSUS de
- * l'image du boîtier (pas révélés à travers une découpe) — certains
- * habillages n'ont pas de vraie transparence, cette approche marche
- * dans tous les cas sans distinction.
+ * Le viseur et le compte-poses sont révélés PAR TRANSPARENCE à travers
+ * l'image du boîtier (couche en dessous, z-index inférieur — voir
+ * CameraBody.jsx/css). Les images de boîtier préréglées sont importées
+ * (pas de simple chemin /public/...) pour que Vite leur donne un nom de
+ * fichier unique à chaque modification : sans ça, le WebView Android/iOS
+ * garde en cache l'ancienne image même après une mise à jour de l'appli.
  */
+import defaultHorizontal from "../assets/skins/default-horizontal.webp";
+import defaultVertical from "../assets/skins/default-vertical.webp";
+import mariageHorizontal from "../assets/skins/mariage-horizontal.webp";
+import mariageVertical from "../assets/skins/mariage-vertical.webp";
+import retroHorizontal from "../assets/skins/retro-horizontal.webp";
+import retroVertical from "../assets/skins/retro-vertical.webp";
+import theme90sHorizontal from "../assets/skins/90s-horizontal.webp";
+import theme90sVertical from "../assets/skins/90s-vertical.webp";
+
 export const HOTSPOTS = {
   landscape: {
     wheelAxis: "horizontal", // glissé gauche→droite
@@ -44,26 +55,26 @@ export const PRESET_THEMES = {
   default: {
     name: "Jaune classique",
     swatch: "#f5c518",
-    landscape: "/skins/default-horizontal.webp",
-    portrait: "/skins/default-vertical.webp",
+    landscape: defaultHorizontal,
+    portrait: defaultVertical,
   },
   mariage: {
     name: "Mariage",
     swatch: "#e9dfc8",
-    landscape: "/skins/mariage-horizontal.webp",
-    portrait: "/skins/mariage-vertical.webp",
+    landscape: mariageHorizontal,
+    portrait: mariageVertical,
   },
   retro: {
     name: "Rétro",
     swatch: "#1a1a1a",
-    landscape: "/skins/retro-horizontal.webp",
-    portrait: "/skins/retro-vertical.webp",
+    landscape: retroHorizontal,
+    portrait: retroVertical,
   },
   neon90s: {
     name: "90's",
     swatch: "#ff5fae",
-    landscape: "/skins/90s-horizontal.webp",
-    portrait: "/skins/90s-vertical.webp",
+    landscape: theme90sHorizontal,
+    portrait: theme90sVertical,
   },
 };
 
